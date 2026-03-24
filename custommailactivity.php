@@ -278,10 +278,6 @@ class CBPCustomMailActivity extends CBPActivity
 
 		$dialog->setMap(self::getPropertiesMap($documentType));
 
-		$dialog->setRuntimeData([
-			'mailboxes' => (array)Main\Mail\Sender::prepareUserMailboxes()
-		]);
-
 		return $dialog;
 	}
 
@@ -291,8 +287,9 @@ class CBPCustomMailActivity extends CBPActivity
 			'MailUserFrom' => [
 				'Name' => Loc::getMessage('BPMA_MAIL_USER_FROM'),
 				'FieldName' => 'mail_user_from',
-				'Type' => 'string',
+				'Type' => 'user',
 				'Required' => true,
+				'Default' => 'user_1',
 				'Getter' => static::getMailUserPropertyGetter(),
 			],
 			'MailUserTo' => [
