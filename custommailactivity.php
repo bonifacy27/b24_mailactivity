@@ -308,7 +308,7 @@ class CBPCustomMailActivity extends CBPActivity
 				'Name' => Loc::getMessage('BPMA_MAIL_USER_TO_EMAIL'),
 				'FieldName' => 'mail_user_to_email',
 				'Type' => 'string',
-				'Multiple' => true,
+				'Multiple' => false,
 			],
 			'MailSubject' => [
 				'Name' => Loc::getMessage('BPMA_MAIL_SUBJECT'),
@@ -475,8 +475,18 @@ class CBPCustomMailActivity extends CBPActivity
 			return false;
 		}
 
+		$mailUserToEmailValue = $arCurrentValues['mail_user_to_email'] ?? '';
+		if (is_array($mailUserToEmailValue))
+		{
+			$mailUserToEmailValue = implode(', ', array_filter(array_map('trim', $mailUserToEmailValue)));
+		}
+		else
+		{
+			$mailUserToEmailValue = trim((string)$mailUserToEmailValue);
+		}
+
 		[$mailUserToEmailArray, $mailUserToEmail] = CBPHelper::UsersStringToArray(
-			$arCurrentValues['mail_user_to_email'] ?? '',
+			$mailUserToEmailValue,
 			$documentType,
 			$arErrors,
 			[__CLASS__, 'CheckEmailUserValue']
