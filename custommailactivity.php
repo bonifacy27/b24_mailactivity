@@ -11,7 +11,7 @@ use Bitrix\Mail;
 use Bitrix\Disk;
 use Bitrix\Main\Localization\Loc;
 
-class CBPMailActivity extends CBPActivity
+class CBPCustomMailActivity extends CBPActivity
 {
 	const DEFAULT_SEPARATOR = ',';
 
@@ -27,6 +27,7 @@ class CBPMailActivity extends CBPActivity
 			'MailUserFromArray' => '',
 			'MailUserTo' => '',
 			'MailUserToArray' => '',
+			'MailUserToEmail' => '',
 			'MailSubject' => '',
 			'MailText' => '',
 			'MailMessageType' => 'plain',
@@ -277,10 +278,6 @@ class CBPMailActivity extends CBPActivity
 
 		$dialog->setMap(self::getPropertiesMap($documentType));
 
-		$dialog->setRuntimeData([
-			'mailboxes' => (array)Main\Mail\Sender::prepareUserMailboxes()
-		]);
-
 		return $dialog;
 	}
 
@@ -290,8 +287,9 @@ class CBPMailActivity extends CBPActivity
 			'MailUserFrom' => [
 				'Name' => Loc::getMessage('BPMA_MAIL_USER_FROM'),
 				'FieldName' => 'mail_user_from',
-				'Type' => 'string',
+				'Type' => 'user',
 				'Required' => true,
+				'Default' => 'user_1',
 				'Getter' => static::getMailUserPropertyGetter(),
 			],
 			'MailUserTo' => [
@@ -302,6 +300,12 @@ class CBPMailActivity extends CBPActivity
 				'Multiple' => true,
 				'Getter' => static::getMailUserPropertyGetter(),
 				'Default' => \Bitrix\Bizproc\Automation\Helper::getResponsibleUserExpression($documentType),
+			],
+			'MailUserToEmail' => [
+				'Name' => Loc::getMessage('BPMA_MAIL_USER_TO_EMAIL'),
+				'FieldName' => 'mail_user_to_email',
+				'Type' => 'string',
+				'Multiple' => false,
 			],
 			'MailSubject' => [
 				'Name' => Loc::getMessage('BPMA_MAIL_SUBJECT'),
@@ -385,6 +389,7 @@ class CBPMailActivity extends CBPActivity
 		$arMap = [
 			'mail_user_from' => 'MailUserFrom',
 			'mail_user_to' => 'MailUserTo',
+			'mail_user_to_email' => 'MailUserToEmail',
 			'mail_subject' => 'MailSubject',
 			'mail_text' => 'MailText',
 			'mail_message_type' => 'MailMessageType',
@@ -467,8 +472,29 @@ class CBPMailActivity extends CBPActivity
 			return false;
 		}
 
-		$properties['MailUserTo'] = implode(', ', $mailUserTo);
-		$properties['MailUserToArray'] = $mailUserToArray;
+		$mailUserToEmailValue = $arCurrentValues['mail_user_to_email'] ?? '';
+		if (is_array($mailUserToEmailValue))
+		{
+			$mailUserToEmailValue = implode(', ', array_filter(array_map('trim', $mailUserToEmailValue)));
+		}
+		else
+		{
+			$mailUserToEmailValue = trim((string)$mailUserToEmailValue);
+		}
+
+		[$mailUserToEmailArray, $mailUserToEmail] = CBPHelper::UsersStringToArray(
+			$mailUserToEmailValue,
+			$documentType,
+			$arErrors,
+			[__CLASS__, 'CheckEmailUserValue']
+		);
+		if (count($arErrors) > 0)
+		{
+			return false;
+		}
+
+		$properties['MailUserTo'] = implode(', ', array_unique(array_merge($mailUserTo, $mailUserToEmail)));
+		$properties['MailUserToArray'] = array_values(array_unique(array_merge($mailUserToArray, $mailUserToEmailArray)));
 
 		$arErrors = self::ValidateProperties(
 			$properties,

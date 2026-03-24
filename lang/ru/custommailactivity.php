@@ -13,4 +13,5 @@ $MESS["BPMA_ATTACHMENT_DISK"] = "Файлы Диска";
 $MESS["BPMA_MAIL_USER_FROM"] = "От кого";
 $MESS["BPMA_MAIL_SUBJECT"] = "Тема";
 $MESS["BPMA_MAIL_USER_TO"] = "Кому";
+$MESS["BPMA_MAIL_USER_TO_EMAIL"] = "E-mail получателей";
 $MESS['BPMA_MAIL_TEXT'] = 'Текст сообщения';

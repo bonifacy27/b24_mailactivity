@@ -5,20 +5,18 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
 	die();
 }
 
-use Bitrix\Main\Localization\Loc;
-
 $arActivityDescription = [
-	'NAME' => Loc::getMessage('BPMA_DESCR_NAME'),
-	'DESCRIPTION' => Loc::getMessage('BPMA_DESCR_DESCR_1'),
+	'NAME' => GetMessage('BPCMAA_DESCR_NAME'),
+	'DESCRIPTION' => GetMessage('BPCMAA_DESCR_DESCR'),
 	'TYPE' => ['activity', 'robot_activity'],
-	'CLASS' => 'MailActivity',
+	'CLASS' => 'CustomMailActivity',
 	'JSCLASS' => 'BizProcActivity',
 	'CATEGORY' => [
 		'ID' => 'interaction',
 	],
 	'ROBOT_SETTINGS' => [
 		'CATEGORY' => 'employee',
-		'TITLE' => Loc::getMessage('BPMA_DESCR_ROBOT_TITLE'),
+		'TITLE' => GetMessage('BPCMAA_DESCR_NAME'),
 		'RESPONSIBLE_PROPERTY' => 'MailUserToArray',
 		'GROUP' => ['informingEmployee'],
 		'SORT' => 1000,
