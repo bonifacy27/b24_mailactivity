@@ -11,7 +11,7 @@ use Bitrix\Mail;
 use Bitrix\Disk;
 use Bitrix\Main\Localization\Loc;
 
-class CBPMailActivity extends CBPActivity
+class CBPCustomMailActivity extends CBPActivity
 {
 	const DEFAULT_SEPARATOR = ',';
 
@@ -27,6 +27,7 @@ class CBPMailActivity extends CBPActivity
 			'MailUserFromArray' => '',
 			'MailUserTo' => '',
 			'MailUserToArray' => '',
+			'MailUserToEmail' => '',
 			'MailSubject' => '',
 			'MailText' => '',
 			'MailMessageType' => 'plain',
@@ -303,6 +304,12 @@ class CBPMailActivity extends CBPActivity
 				'Getter' => static::getMailUserPropertyGetter(),
 				'Default' => \Bitrix\Bizproc\Automation\Helper::getResponsibleUserExpression($documentType),
 			],
+			'MailUserToEmail' => [
+				'Name' => Loc::getMessage('BPMA_MAIL_USER_TO_EMAIL'),
+				'FieldName' => 'mail_user_to_email',
+				'Type' => 'string',
+				'Multiple' => true,
+			],
 			'MailSubject' => [
 				'Name' => Loc::getMessage('BPMA_MAIL_SUBJECT'),
 				'Description' => Loc::getMessage('BPMA_MAIL_SUBJECT'),
@@ -385,6 +392,7 @@ class CBPMailActivity extends CBPActivity
 		$arMap = [
 			'mail_user_from' => 'MailUserFrom',
 			'mail_user_to' => 'MailUserTo',
+			'mail_user_to_email' => 'MailUserToEmail',
 			'mail_subject' => 'MailSubject',
 			'mail_text' => 'MailText',
 			'mail_message_type' => 'MailMessageType',
@@ -467,8 +475,19 @@ class CBPMailActivity extends CBPActivity
 			return false;
 		}
 
-		$properties['MailUserTo'] = implode(', ', $mailUserTo);
-		$properties['MailUserToArray'] = $mailUserToArray;
+		[$mailUserToEmailArray, $mailUserToEmail] = CBPHelper::UsersStringToArray(
+			$arCurrentValues['mail_user_to_email'] ?? '',
+			$documentType,
+			$arErrors,
+			[__CLASS__, 'CheckEmailUserValue']
+		);
+		if (count($arErrors) > 0)
+		{
+			return false;
+		}
+
+		$properties['MailUserTo'] = implode(', ', array_unique(array_merge($mailUserTo, $mailUserToEmail)));
+		$properties['MailUserToArray'] = array_values(array_unique(array_merge($mailUserToArray, $mailUserToEmailArray)));
 
 		$arErrors = self::ValidateProperties(
 			$properties,
