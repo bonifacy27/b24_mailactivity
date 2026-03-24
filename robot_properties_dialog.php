@@ -10,6 +10,7 @@ $subject = $map['MailSubject'];
 $messageType = $dialog->getCurrentValue($map['MailMessageType']['FieldName'], 'html');
 $attachmentType = isset($map['FileType']) ? $map['FileType'] : null;
 $attachment = isset($map['File']) ? $map['File'] : null;
+$toEmail = isset($map['MailUserToEmail']) ? $map['MailUserToEmail'] : null;
 $from = isset($map['MailUserFrom']) ? $map['MailUserFrom'] : null;
 $fromValue = $from ? $dialog->getCurrentValue($from['FieldName'],'') : null;
 $fromValue = \CBPHelper::UsersArrayToString($fromValue, $dialog->getWorkflowTemplate(), $dialog->getDocumentType());
@@ -38,6 +39,11 @@ endif;
 		</span>
 		<?=$dialog->renderFieldControl($map['MailUserTo'])?>
 	</div>
+	<?php if ($toEmail): ?>
+	<div class="bizproc-automation-popup-settings">
+		<?=$dialog->renderFieldControl($toEmail)?>
+	</div>
+	<?php endif; ?>
 
 	<div class="bizproc-automation-popup-settings">
 		<?=$dialog->renderFieldControl($subject)?>
@@ -50,7 +56,7 @@ endif;
 			$content = $dialog->getCurrentValue($messageText['FieldName'], '');
 			if ($dialog->getCurrentValue('mail_message_encoded'))
 			{
-				$content = \CBPMailActivity::decodeMailText($content);
+				$content = \CBPCustomMailActivity::decodeMailText($content);
 				$content = \Bitrix\Bizproc\Automation\Helper::convertExpressions($content, $dialog->getDocumentType());
 			}
 
