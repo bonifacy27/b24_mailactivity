@@ -12,7 +12,7 @@ $arActivityDescription = [
 	'CLASS' => 'CustomMailActivity',
 	'JSCLASS' => 'BizProcActivity',
 	'CATEGORY' => [
-		'ID' => 'interaction',
+		'ID' => 'other',
 	],
 	'ROBOT_SETTINGS' => [
 		'CATEGORY' => 'employee',
