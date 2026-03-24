@@ -14,11 +14,6 @@ $arActivityDescription = [
 	'CATEGORY' => [
 		'ID' => 'other',
 	],
-	'FILTER' => [
-		'INCLUDE' => [
-			['documentType' => ['crm']],
-		],
-	],
 	'ROBOT_SETTINGS' => [
 		'CATEGORY' => 'client',
 	],
